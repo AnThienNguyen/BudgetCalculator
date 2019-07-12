@@ -95,6 +95,12 @@ var budgetController = (function(){
 			}
 		},
 
+		deleteAll: function(type){
+			var i = data.allItems[type].length;
+			
+			data.allItems[type].splice(0, i);
+		},
+
 		calculateBudget: function() {
 			// Calculate total income and expenses
 			calculateTotal('exp');
@@ -169,12 +175,14 @@ var UIController = (function(){
 		percentageLabel: '.budget__expenses--percentage',
 		container: '.container',
 		expensesPercLabel: '.item__percentage',
-		dateLabel: '.budget__title--month'
+		dateLabel: '.budget__title--month',
+		allDeleteBtn: '.delete__all--btn',
+		deleteAllContainer: '.delete-all'
 	};
 
 	// formats all nums to: +/- 0,000.00
 	var formatNumber = function(num, type){
-		var numSplit, int, dec;
+		var numSplit, int, dec, type;
 		/*
 		+ or - before number
 		exactly 2 decimal places
@@ -253,6 +261,11 @@ var UIController = (function(){
 			var el = document.getElementById(selectorID);
 			el.parentNode.removeChild(el);
 		},
+
+		removeAll: function() {
+            document.querySelector(DOMstrings.incomeContainer).innerHTML = '';
+            document.querySelector(DOMstrings.expensesContainer).innerHTML = '';
+        },
 
 		// clear all input fields
 		clearFields: function(){
@@ -359,6 +372,7 @@ var controller = (function(budgetCtrl, UICtrl){
 		});
 
 		document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+		document.querySelector(DOM.allDeleteBtn).addEventListener('click', deleteAll);
 		document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 	};
 
@@ -432,6 +446,19 @@ var controller = (function(budgetCtrl, UICtrl){
 			updatePercentages();
 		}
 	}
+	var deleteAll = function() 
+	{
+        budgetCtrl.deleteAll('inc');
+        budgetCtrl.deleteAll('exp');
+        UICtrl.removeAll();
+ 
+        // 3. Update and show the new budget
+        updateBudget();
+            
+        // 4. Calculate and update percentages
+        updatePercentages();
+    };
+
 	// Initialize applications
 	return {
 		init: function(){
