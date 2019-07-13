@@ -5,6 +5,10 @@ This project was created to learn JavaScript DOM manipulation, event handlers, a
 ## Workflow
 ![Workflow](images/back.png)
 
+## Extras added
+* Delete all inputs/Clear the board
+* Formated numbers
+
 ## Built With
 * HTML
 * CSS
