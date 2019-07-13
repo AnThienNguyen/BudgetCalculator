@@ -54,7 +54,10 @@ var budgetController = (function(){
 		addItem: function(type, des, val) {
 			var newItem, ID;
 
-			
+			//[1 2 3 4 5], next ID = 6
+			//[1 2 4 6 8], next ID = 9
+			// ID = last ID + 1
+
 			// Create new ID
 			if (data.allItems[type].length > 0){
 				// ID should be last ID + 1 to avoid conflicts
@@ -97,7 +100,7 @@ var budgetController = (function(){
 
 		deleteAll: function(type){
 			var i = data.allItems[type].length;
-			
+
 			data.allItems[type].splice(0, i);
 		},
 
@@ -164,14 +167,14 @@ var UIController = (function(){
 	// Collection of DOM strings for app
 	var DOMstrings = {
 		inputType: '.add__type',
-		inputDescription:'.add__description',
+		inputDescription: '.add__description',
 		inputValue: '.add__value',
 		inputBtn: '.add__btn',
 		incomeContainer: '.income__list',
-		expenseContainer: '.expenses__list',
+		expensesContainer: '.expenses__list',
 		budgetLabel: '.budget__value',
 		incomeLabel: '.budget__income--value',
-		expenseLabel: '.budget__expenses--value',
+		expensesLabel: '.budget__expenses--value',
 		percentageLabel: '.budget__expenses--percentage',
 		container: '.container',
 		expensesPercLabel: '.item__percentage',
@@ -223,7 +226,7 @@ var UIController = (function(){
 
 	return {
 		// gets values from input fields
-		getinput: function() {
+		getInput: function() {
 			return{
 				type: document.querySelector(DOMstrings.inputType).value, // inc or exp
 				description: document.querySelector(DOMstrings.inputDescription).value,
@@ -243,7 +246,7 @@ var UIController = (function(){
 			}
 			// expense
 			else if (type === 'exp'){
-				element = DOMstrings.expenseContainer;
+				element = DOMstrings.expensesContainer;
 				html = '<div class="item clearfix" id="exp-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__percentage">21%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div> </div>';
 			}
 			
@@ -294,11 +297,11 @@ var UIController = (function(){
 
 			document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
 			document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
-			document.querySelector(DOMstrings.expenseLabel).textContent = formatNumber(obj.totalExp, 'exp');
+			document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
 			
 			// display percent(top) if more than 0/not null
 			if(obj.percentage > 0) {
-				document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + "%";
+				document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
 			}
 			else{
 				document.querySelector(DOMstrings.percentageLabel).textContent = '---';
@@ -320,8 +323,8 @@ var UIController = (function(){
 		},
 
 		// displays current date on top of app 
-		displayDate: function(){
-			var now, month, year;
+		displayMonth: function(){
+			var now, months, month, year;
 
 			now = new Date();
 
@@ -335,8 +338,8 @@ var UIController = (function(){
 		// change color if exp or inc
 		changedType: function(){
 			var fields = document.querySelectorAll(
-				DOMstrings.inputType + ', ' +
-				DOMstrings.inputDescription + ', ' +
+				DOMstrings.inputType + ',' +
+				DOMstrings.inputDescription + ',' +
 				DOMstrings.inputValue);
 
 			nodeListForEach(fields, function(cur) {
@@ -402,7 +405,7 @@ var controller = (function(budgetCtrl, UICtrl){
 		var input, newItem;
 
 		// 1. Get field input data
-		input = UICtrl.getinput();
+		input = UICtrl.getInput();
 
 		// if description not empty, value not a NaN, and not less than 0
 		if(input.description !== "" && !isNaN(input.value) && input.value > 0){
@@ -445,7 +448,8 @@ var controller = (function(budgetCtrl, UICtrl){
 			// 4. Calculate and update percentages
 			updatePercentages();
 		}
-	}
+	};
+
 	var deleteAll = function() 
 	{
         budgetCtrl.deleteAll('inc');
@@ -462,7 +466,7 @@ var controller = (function(budgetCtrl, UICtrl){
 	// Initialize applications
 	return {
 		init: function(){
-			UICtrl.displayDate();
+			UICtrl.displayMonth();
 			UICtrl.displayBudget({
 				budget: 0,
 				totalInc: 0,
